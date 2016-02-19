@@ -33,14 +33,37 @@ case class Cursor(x: Int, y: Int, width: Int, height: Int) {
   lazy val s = moveBy(0, 1)
 
   lazy val n = moveBy(0, -1)
+
+  lazy val neighbors: List[Cursor] = List(n, s, e, w, n.e, n.w, s.e, s.w)
 }
 
 
 case class Matrix(width: Int, height: Int, cells: List[List[Boolean]]) {
-
+  require(cells.length == height)
+  require(cells.forall(_.length == width))
 
   def step: Matrix = {
-    ???
+    val newCells = cells.zipWithIndex.map {
+      case (row, y) => row.zipWithIndex.map {
+        case (_, x) => newState(Cursor(x, y, width, height))
+      }
+    }
+    copy(cells = newCells)
+  }
+
+  def cellState(cell: Cursor): Boolean = cells(cell.y)(cell.x)
+
+  def newState(cell: Cursor): Boolean = (cellState(cell), neighborCount(cell)) match {
+    case (true, count) if count == 2 || count == 3 => true
+    case (false, count) if count == 3 => true
+    case _ => false
+  }
+
+  def neighborCount(cell: Cursor): Int = {
+    cell.neighbors.foldLeft[Int](0) {
+      case (liveCount: Int, c: Cursor) if cellState(c) => liveCount + 1
+      case (liveCount, _) => liveCount
+    }
   }
 }
 
