@@ -1,47 +1,19 @@
 package gameoflife.model
 
-/**
-  * Cursor gives us a way to move around a board easily. When we move past the edge of
-  * the board we will get wrapped around to the other edge.
-  *
-  * Positions are zero-indexed from the top-left. The maximum x and y positions are
-  * therefore 1 less that the width and height.
-  *
-  * @param x      - left-right position counting from left of board
-  * @param y      - top-bottom position counting from top of board
-  * @param width  - number of columns on the board
-  * @param height - number of rows on the board
-  */
-case class Cursor(x: Int, y: Int, width: Int, height: Int) {
-  require(x >= 0)
-  require(x < width)
-  require(y >= 0)
-  require(y < height)
+import scala.math
 
-  def moveBy(xDiff: Int, yDiff: Int): Cursor = copy(x = add(x + xDiff, width), y = add(y + yDiff, height))
 
-  private def add(i: Int, limit: Int): Int = i match {
-    case i1 if i1 < 0 => i1 + limit
-    case i1 if i1 > (width - 1) => i1 % limit
-    case i1 => i1
-  }
-
-  lazy val w = moveBy(-1, 0)
-
-  lazy val e = moveBy(1, 0)
-
-  lazy val s = moveBy(0, 1)
-
-  lazy val n = moveBy(0, -1)
-
-  lazy val neighbors: List[Cursor] = List(n, s, e, w, n.e, n.w, s.e, s.w)
-}
 
 
 case class Matrix(width: Int, height: Int, cells: List[List[Boolean]]) {
   require(cells.length == height)
   require(cells.forall(_.length == width))
 
+  /**
+    * Perhaps not the most efficient algorithm
+    *
+    * @return a Matrix with cell states calculated based on this Matrix
+    */
   def step: Matrix = {
     val newCells = cells.zipWithIndex.map {
       case (row, y) => row.zipWithIndex.map {
@@ -65,9 +37,33 @@ case class Matrix(width: Int, height: Int, cells: List[List[Boolean]]) {
       case (liveCount, _) => liveCount
     }
   }
+
+  def line = (" " +: (List.fill(width)("-") ++ List(" "))).mkString
+
+  def rep: List[String] = cells.map { row =>
+    ":" + row.map(alive => if (alive) "*" else ".").mkString + ":"
+  }
+
 }
 
 
-case class Board(step: Int, state: Matrix) {
+case class Board(stepNum: Int, state: Matrix) {
+  def step = copy(stepNum + 1, state.step)
+}
 
+object Board {
+  val r = scala.util.Random
+
+  def random: Board = {
+    val width = r.nextInt(20) + 4
+    val height = r.nextInt(20) + 4
+
+    val cells: List[List[Boolean]] = (1 to height).toList.map { y =>
+      (1 to width).toList.map { x =>
+        r.nextBoolean()
+      }
+    }
+
+    Board(0, Matrix(width, height, cells))
+  }
 }
