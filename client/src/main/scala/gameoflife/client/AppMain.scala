@@ -8,8 +8,8 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scalatags.JsDom.all._
 
-@JSExport("GameOfLifeMain")
-object GameOfLifeMain extends js.JSApp {
+@JSExport("AppMain")
+object AppMain extends js.JSApp {
 
   val boardView = new BoardView(AppCircuit.zoom(identity), AppCircuit)
 
