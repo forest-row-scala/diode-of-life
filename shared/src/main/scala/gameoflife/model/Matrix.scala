@@ -9,7 +9,7 @@ case class Matrix(width: Int, height: Int, cells: List[List[Boolean]]) {
     *
     * @return a Matrix with cell states calculated based on this Matrix
     */
-  def step: Matrix = {
+  def nextState: Matrix = {
     val newCells = cells.zipWithIndex.map {
       case (row, y) => row.zipWithIndex.map {
         case (_, x) => newState(Cursor(x, y, width, height))

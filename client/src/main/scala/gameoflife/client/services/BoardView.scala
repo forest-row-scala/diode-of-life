@@ -10,20 +10,21 @@ import scalatags.JsDom.all._
   *
   * @param dispatch Dispatcher
   */
-class BoardView(board: ModelR[Board, Board], dispatch: Dispatcher) {
-  def render = {
+class BoardView(dispatch: Dispatcher) {
+  def render(board: Board) = {
     div(
-      p("Step = ", b(board.value.stepNum), br, br,
-        pre(cls := "board",
-          board.value.state.rep.map(l => Seq[Frag](l, br))
-        )
+      p("Step = ", b(board.stepNum), br, br,
+        pre(cls := "board", board.rep.map(l => Seq[Frag](l, br)))
       ),
-      div(cls := "btn-group", stepButton)
+      div(cls := "btn-group",
+        button(cls := "btn btn-default", onclick := { () => dispatch(Reset) }, "Reset"),
+        stepButton(board)
+      )
     )
   }
 
-  def stepButton: Frag =
-    if (board.value.state.isEmpty) p("Board is empty")
-    else if (board.value.state == board.value.state.step) p("Board is stable")
+  def stepButton(board: Board): Frag =
+    if (board.cells.isEmpty) p("Board is empty")
+    else if (board.cells == board.cells.nextState) p("Board is stable")
     else button(cls := "btn btn-default", onclick := { () => dispatch(Step) }, "Step")
 }

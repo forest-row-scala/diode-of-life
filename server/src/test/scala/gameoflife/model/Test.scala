@@ -13,8 +13,8 @@ object Test {
 
     println(m.rep.mkString("\n"))
     println
-    println(m.step.rep.mkString("\n"))
+    println(m.nextState.rep.mkString("\n"))
     println
-    println(m.step.step.rep.mkString("\n"))
+    println(m.nextState.nextState.rep.mkString("\n"))
   }
 }

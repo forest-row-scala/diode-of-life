@@ -2,6 +2,7 @@ package gameoflife.client
 
 import gameoflife.client.logger._
 import gameoflife.client.services.{AppCircuit, BoardView, Reset}
+import gameoflife.model.Board
 import org.scalajs.dom._
 
 import scala.scalajs.js
@@ -11,7 +12,7 @@ import scalatags.JsDom.all._
 @JSExport("AppMain")
 object AppMain extends js.JSApp {
 
-  val boardView = new BoardView(AppCircuit.zoom(identity), AppCircuit)
+  val boardView = new BoardView(AppCircuit)
 
   @JSExport
   def main(): Unit = {
@@ -22,16 +23,17 @@ object AppMain extends js.JSApp {
     log.enableServerLogging("/logging")
     log.info("This message goes to server as well")
 
-    AppCircuit.subscribe(AppCircuit.zoom(identity))(_ => render(root))
+    val modelR = AppCircuit.zoom(identity)
+    AppCircuit.subscribe(modelR)(_ => render(root, modelR.value))
 
     AppCircuit(Reset)
   }
 
-  def render(root: Element) = {
+  def render(root: Element, board: Board) = {
     log.info("render")
     val e = div(cls := "container",
       h1("Conway's Game of Life"),
-      boardView.render // renders the counter view
+      boardView.render(board) // renders the counter view
     ).render
     // clear and update contents
     root.innerHTML = ""

@@ -1,16 +1,28 @@
 package gameoflife.model
 
-case class Board(stepNum: Int, state: Matrix) {
-  def step = copy(stepNum + 1, state.step)
+case class Board(stepNum: Int, cells: Matrix) {
+  /**
+    * Calculate the next state of the board
+    */
+  def next: Board = copy(stepNum + 1, cells.nextState)
+
+  /**
+    * Produce a basic string representation of the board
+    */
+  def rep: List[String] = cells.rep
 }
 
 object Board {
-  val r = scala.util.Random
+  private val r = scala.util.Random
 
-  def random: Board = {
-    val width = r.nextInt(20) + 4
-    val height = r.nextInt(20) + 4
-
+  /**
+    * Produce a randomly populated board
+    *
+    * @param width  the width of the new board. Default is a random value in range 4 to 24
+    * @param height the height of the new board. Default is a random value in range 4 to 24
+    * @return a new Board of the given width and height, randomly populated
+    */
+  def random(width: Int = r.nextInt(20) + 4, height: Int = r.nextInt(20) + 4): Board = {
     val cells: List[List[Boolean]] = (1 to height).toList.map { y =>
       (1 to width).toList.map { x =>
         r.nextBoolean()
