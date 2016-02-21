@@ -13,18 +13,15 @@ package gameoflife.model
   * @param height - number of rows on the board
   */
 case class Cursor(x: Int, y: Int, width: Int, height: Int) {
+
+  import Cursor.limitRange
+
   require(x >= 0)
   require(x < width)
   require(y >= 0)
   require(y < height)
 
-  def moveBy(xDiff: Int, yDiff: Int): Cursor = copy(x = add(x + xDiff, width), y = add(y + yDiff, height))
-
-  private def add(i: Int, limit: Int): Int = i match {
-    case i1 if i1 < 0 => i1 + limit
-    case i1 if i1 > (width - 1) => i1 % limit
-    case i1 => i1
-  }
+  def moveBy(xDiff: Int, yDiff: Int): Cursor = copy(x = limitRange(x + xDiff, width), y = limitRange(y + yDiff, height))
 
   lazy val w = moveBy(-1, 0)
 
@@ -35,4 +32,12 @@ case class Cursor(x: Int, y: Int, width: Int, height: Int) {
   lazy val n = moveBy(0, -1)
 
   lazy val neighbors: List[Cursor] = List(n, s, e, w, n.e, n.w, s.e, s.w)
+}
+
+object Cursor {
+  def limitRange(i: Int, limit: Int): Int = {
+    require(limit > 0)
+
+    if (i < 0) i % limit + limit else i % limit
+  }
 }

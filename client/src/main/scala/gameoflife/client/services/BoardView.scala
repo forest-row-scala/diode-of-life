@@ -14,11 +14,16 @@ class BoardView(board: ModelR[Board, Board], dispatch: Dispatcher) {
   def render = {
     div(
       p("Step = ", b(board.value.stepNum), br, br,
-        code(cls := "board",
+        pre(cls := "board",
           board.value.state.rep.map(l => Seq[Frag](l, br))
         )
       ),
-      div(cls := "btn-group",
-        button(cls := "btn btn-default", onclick := { () => dispatch(Step) }, "Step")))
+      div(cls := "btn-group", stepButton)
+    )
   }
+
+  def stepButton: Frag =
+    if (board.value.state.isEmpty) p("Board is empty")
+    else if (board.value.state == board.value.state.step) p("Board is stable")
+    else button(cls := "btn btn-default", onclick := { () => dispatch(Step) }, "Step")
 }

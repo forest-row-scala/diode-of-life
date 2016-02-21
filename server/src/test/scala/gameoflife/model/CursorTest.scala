@@ -22,4 +22,11 @@ class CursorTest extends FlatSpec with Matchers {
     Cursor(1, 1, 10, 10).w shouldBe Cursor(0, 1, 10, 10)
     Cursor(0, 1, 10, 10).w shouldBe Cursor(9, 1, 10, 10)
   }
+
+  "Cursor.limitRange" should "correctly limit range" in {
+    Cursor.limitRange(13, 7) shouldBe 6
+    Cursor.limitRange(5, 7) shouldBe 5
+    Cursor.limitRange(-5, 7) shouldBe 2
+    Cursor.limitRange(-13, 7) shouldBe 1
+  }
 }
